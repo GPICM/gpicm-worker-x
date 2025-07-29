@@ -1,0 +1,7 @@
+numpy
+pandas
+matplotlib
+shapely
+scipy
+pymongo
+python-dotenv
