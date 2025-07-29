@@ -45,8 +45,15 @@ df = pd.DataFrame(df)
 # Agora pegar os pontos como numpy array
 points = df[['lon', 'lat']].values
 
-hull = ConvexHull(points)
-hull_poly = Polygon(points[hull.vertices])
+# Carregar GeoJSON externo com a fronteira
+with open("macae.json") as f:
+    border_geojson = json.load(f)
+
+# Extrair a geometria (Polygon ou MultiPolygon)
+from shapely.geometry import shape
+
+hull_poly = shape(border_geojson["features"][0]["geometry"])
+
 
 # Interpolation grid
 buffer = 0.05
@@ -55,7 +62,7 @@ grid_lat = np.linspace(df['lat'].min()-buffer, df['lat'].max()+buffer, 150)
 grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
 
 # RBF interpolation
-rbf = Rbf(df['lon'], df['lat'], df['wind'], function='linear')
+rbf = Rbf(df['lon'], df['lat'], df['wind'], function='thin_plate')
 z_interp = rbf(grid_x, grid_y)
 
 # Mask outside convex hull
@@ -72,12 +79,12 @@ z_round = z_interp#np.round(k * z_interp) / k  # Round to nearest 0.5
 # Robust GeoJSON generation that handles edge cases
 def create_geojson(grid_x, grid_y, z_data, levels):
     fig, ax = plt.subplots()
-    cs = ax.contourf(grid_x, grid_y, z_data, levels=levels, cmap='coolwarm')
+    cs = ax.contourf(grid_x, grid_y, z_data, levels=levels, cmap='turbo')
     features = []
     
     # --- Color Mapping Setup ---
     norm = mcolors.Normalize(vmin=min(levels), vmax=max(levels))
-    cmap = cm.get_cmap('coolwarm')  # Must match the contourf cmap
+    cmap = cm.get_cmap('turbo')  # Must match the contourf cmap
     sm = cm.ScalarMappable(norm=norm, cmap=cmap)
 
     # Safe way to access contour segments
