@@ -15,6 +15,9 @@ from scipy.interpolate import Rbf
 from scipy.spatial import ConvexHull
 from shapely.errors import TopologicalError
 
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
+
 # Load and preprocess data
 
 docs = list(get_today_online_station_metrics())
@@ -69,14 +72,20 @@ z_round = z_interp#np.round(k * z_interp) / k  # Round to nearest 0.5
 # Robust GeoJSON generation that handles edge cases
 def create_geojson(grid_x, grid_y, z_data, levels):
     fig, ax = plt.subplots()
-    cs = ax.contourf(grid_x, grid_y, z_data, levels=levels)
-    
+    cs = ax.contourf(grid_x, grid_y, z_data, levels=levels, cmap='coolwarm')
     features = []
     
+    # --- Color Mapping Setup ---
+    norm = mcolors.Normalize(vmin=min(levels), vmax=max(levels))
+    cmap = cm.get_cmap('coolwarm')  # Must match the contourf cmap
+    sm = cm.ScalarMappable(norm=norm, cmap=cmap)
+
     # Safe way to access contour segments
     if hasattr(cs, 'allsegs'):
         for i in range(min(len(cs.levels), len(cs.allsegs))):  # Ensure we don't exceed bounds
             level = cs.levels[i]
+            rgba = sm.to_rgba(level)  # Get RGBA color for this level
+            hex_color = mcolors.rgb2hex(rgba)  # Convert to HEX
             for seg in cs.allsegs[i]:
                 if len(seg) < 3:  # Need at least 3 points
                     continue
@@ -104,7 +113,10 @@ def create_geojson(grid_x, grid_y, z_data, levels):
                         "properties": {
                             "temperature": float(level),
                             "min_temp": float(level - (levels[1]-levels[0])/2),
-                            "max_temp": float(level + (levels[1]-levels[0])/2)
+                            "max_temp": float(level + (levels[1]-levels[0])/2),
+                            "color": hex_color,  # HEX color
+                            "fill": hex_color,   # For web maps
+                            "fill-opacity": 0.8  # Match your plot's alpha
                         },
                         "geometry": {
                             "type": "Polygon" if clipped.geom_type == 'Polygon' else "MultiPolygon",
