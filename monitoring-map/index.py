@@ -75,6 +75,10 @@ for i in range(grid_x.shape[0]):
 z_interp[mask] = np.nan
 k= 0.5
 z_round = z_interp#np.round(k * z_interp) / k  # Round to nearest 0.5
+z_min = np.nanmin(z_interp)
+z_max = np.nanmax(z_interp)
+print(f"z_min: {z_min}, z_max: {z_max}")
+z_round = np.clip(z_round, z_min, z_max)
 
 # Robust GeoJSON generation that handles edge cases
 def create_geojson(grid_x, grid_y, z_data, levels):
