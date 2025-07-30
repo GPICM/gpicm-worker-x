@@ -25,7 +25,7 @@ docs = list(get_today_online_station_metrics())
 
 df = []
 
-for i in range(0, 13):
+for i in range(0, len(docs)):
     doc = docs[i]
 
     print(doc)
@@ -46,7 +46,7 @@ df = pd.DataFrame(df)
 points = df[['lon', 'lat']].values
 
 # Carregar GeoJSON externo com a fronteira
-with open("macae.json") as f:
+with open("./monitoring-map/macae.json") as f:
     border_geojson = json.load(f)
 
 # Extrair a geometria (Polygon ou MultiPolygon)
@@ -62,7 +62,7 @@ grid_lat = np.linspace(df['lat'].min()-buffer, df['lat'].max()+buffer, 150)
 grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
 
 # RBF interpolation
-rbf = Rbf(df['lon'], df['lat'], df['wind'], function='thin_plate')
+rbf = Rbf(df['lon'], df['lat'], df['wind'], function='linear')
 z_interp = rbf(grid_x, grid_y)
 
 # Mask outside convex hull
