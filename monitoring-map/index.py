@@ -40,7 +40,7 @@ def main():
 
         # Load metrics
         print("Loading metric data")
-        metric_dfs = loadMetricDataFrames()
+        metric_dfs = loadMetricDataFrames(field_config_map)
         if not metric_dfs:
             print("No valid metric data available.")
             return
@@ -96,10 +96,9 @@ def main():
 
             #To Debug
                       
-            filename = f"contours_{field}.geojson"
-            
-            with open(filename, 'w') as f:
-                json.dump(geojson, f, indent=2)  
+            #filename = f"contours_{field}.geojson"
+            #with open(filename, 'w') as f:
+            #    json.dump(geojson, f, indent=2)  
             
 
             print(f"Saved GeoJSON for {field}")
