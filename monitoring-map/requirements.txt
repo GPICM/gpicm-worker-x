@@ -6,3 +6,4 @@ scipy
 pymongo
 python-dotenv
 schedule
+pykrige
