@@ -35,9 +35,6 @@ for cfg in config_data.get("configures", []):
     interpolation = cfg["interpolation"]
     interpolation_map[field] = interpolation
 
-# Example output
-print(levels_map)
-
 def main():
 
     try:

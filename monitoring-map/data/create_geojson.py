@@ -22,7 +22,6 @@ simplify_tolerance = 0.00025  # degrees (small for subtle simplification)
 
 def createGeojson(grid_x, grid_y, z_data, levels, hull_poly, colors = default_colors):
 
-
     print("levels:",  len(levels))
     print("colors:",  len(colors))
     
