@@ -7,7 +7,7 @@ from scipy.interpolate import Rbf
 from shapely.geometry import Point, shape
 from data.load_metrics import loadMetricDataFrames
 from data.create_geojson import createGeojson
-
+from infrastructure.interpolated_maps_repository import upsert_interpolated_map
 # Example: load your config JSON from file or string
 with open("./monitoring-map/config.json") as f:
     config_data = json.load(f)
@@ -85,11 +85,16 @@ def main():
 
             geojson = createGeojson(grid_x, grid_y, z_interp, levels, hull_poly_simple, colors)
 
+            upsert_interpolated_map(field, geojson)
+
             """ Save Result """
+            """             
             filename = f"contours_{field}.geojson"
+            
             with open(filename, 'w') as f:
-                json.dump(geojson, f, indent=2)
-            print(f"Successfully generated {filename}")
+                json.dump(geojson, f, indent=2) """
+
+            print(f"Successfully generated geojson to {field}")
 
             print(f"Stations included: {len(points)}")
             print(f"Contour levels used: {levels}")
