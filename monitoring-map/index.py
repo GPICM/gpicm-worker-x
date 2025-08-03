@@ -11,7 +11,7 @@ from data.load_metrics import loadMetricDataFrames
 from data.create_geojson import createGeojson
 from infrastructure.interpolated_maps_repository import upsert_interpolated_map
 # Example: load your config JSON from file or string
-with open("./monitoring-map/config.json") as f:
+with open("./config.json") as f:
     config_data = json.load(f)
 
 # Build a dict: field name -> sorted list of limits
@@ -41,7 +41,7 @@ def main():
         """ Load GeoJSON Borders """
     
         print("Loading Default GeoJson borders")
-        with open("./monitoring-map/macae.json") as f:
+        with open("./macae.json") as f:
             border_geojson = json.load(f)
 
         hull_poly = shape(border_geojson["features"][0]["geometry"])
