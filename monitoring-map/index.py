@@ -70,8 +70,12 @@ def main():
             grid_lat = np.linspace(df['lat'].min() - buffer, df['lat'].max() + buffer, 150)
             grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
 
+
+            interpolationMethod = interpolation_map.get(field)
+            print("Metodo selecionado: ", interpolationMethod)
+
             z_interp= None
-            if interpolation_map.get(field) == "kriging":
+            if interpolationMethod == "kriging":
                 z_interp = kriging_interpolation(df, field, grid_lon, grid_lat)
             else:
                 rbf = Rbf(df['lon'], df['lat'], df[field], function='linear')
@@ -98,11 +102,11 @@ def main():
 
             """ Save Result """
 
-            """             
-                filename = f"contours_{field}.geojson"
-                
-                with open(filename, 'w') as f:
-                    json.dump(geojson, f, indent=2)  
+            """              
+            filename = f"contours_{field}.geojson"
+            
+            with open(filename, 'w') as f:
+                json.dump(geojson, f, indent=2)  
             """
 
             upsert_interpolated_map(field, geojson)
