@@ -1,7 +1,9 @@
 
 import json
 import numpy as np
-import pandas as pd
+
+import schedule
+import time
 
 from scipy.interpolate import Rbf
 from shapely.geometry import Point, shape
@@ -87,15 +89,7 @@ def main():
 
             upsert_interpolated_map(field, geojson)
 
-            """ Save Result """
-            """             
-            filename = f"contours_{field}.geojson"
-            
-            with open(filename, 'w') as f:
-                json.dump(geojson, f, indent=2) """
-
             print(f"Successfully generated geojson to {field}")
-
             print(f"Stations included: {len(points)}")
             print(f"Contour levels used: {levels}")
 
@@ -106,4 +100,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    print("Scheduler started. Running every 10 minutes.")
+    schedule.every(10).minutes.do(main)
+    main() 
+    while True:
+        schedule.run_pending()
+        time.sleep(10)
