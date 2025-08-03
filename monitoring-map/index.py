@@ -1,7 +1,3 @@
-from dotenv import load_dotenv
-
-print("Loading environment variables")
-load_dotenv()
 
 import json
 import numpy as np
@@ -11,7 +7,6 @@ from scipy.interpolate import Rbf
 from shapely.geometry import Point, shape
 from data.load_metrics import loadMetrics
 from data.create_geojson import createGeojson
-
 
 def main():
 
@@ -64,7 +59,7 @@ def main():
         z_round = z_interp  # np.round(0.5 * z_interp) / 0.5  # Optional rounding
 
 
-        levels = [0.0, 10, 20, 30, 40, 50, 100.0]  # 6 intervals, 7 thresholds
+        levels = [0.0, 45, 90, 125, 180, 240, 270]  # 6 intervals, 7 thresholds
         geojson = createGeojson(grid_x, grid_y, z_round, levels, hull_poly_simple)
 
         with open('contours.geojson', 'w') as f:

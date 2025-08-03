@@ -1,27 +1,20 @@
-import os
-
-from pymongo import MongoClient
+from infrastructure.database import get_connection
 from datetime import datetime, time, timedelta
 
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-client = MongoClient(DATABASE_URL)
-db = client["weather"]
-collection = db["station_daily_metrics"]
-
-def get_today_online_station_metrics():
+def get_online_station_metrics():
         
+    db = get_connection()
+
+    collection = db["station_daily_metrics"]
+
     now = datetime.now()
     ten_minutes_ago = now - timedelta(minutes=10)
 
     pipeline = [
         {
             "$match": {
-                "lastRecordAt": { "$gte": ten_minutes_ago },
-                "latestTemperature": {
-                    "$ne": None,
-                    "$exists": True
-                }          
+                "lastRecordAt": { "$gte": ten_minutes_ago },    
             }
         },
         {
@@ -45,6 +38,8 @@ def get_today_online_station_metrics():
                 "latestTemperature": 1,
                 "rainVolumeAcc": 1,
                 "latestWindGust": 1,
+                "latestWindDirection": 1,
+                "lastedWindSpeed": 1,
                 "stationSlug": 1
             }
         }
