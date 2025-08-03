@@ -1,0 +1,70 @@
+{
+  "configures": [
+    {
+      "field": "latestTemperature",
+      "label": "Temperatura",
+      "levels": [
+        { "color": "#00A651", "limit": 45 },
+        { "color": "#0071BC", "limit": 90 },
+        { "color": "#FCEE21", "limit": 125 },
+        { "color": "#F7931E", "limit": 180 },
+        { "color": "#ED1C24", "limit": 240 },
+        { "color": "#A50000", "limit": 270 },
+        { "color": "#410679", "limit": 9999 }
+      ]
+    },
+    {
+      "field": "rainVolumeAcc",
+      "label": "Volume Acumulado de Chuva",
+      "levels": [
+        { "color": "#00A651", "limit": 45 },
+        { "color": "#0071BC", "limit": 90 },
+        { "color": "#FCEE21", "limit": 125 },
+        { "color": "#F7931E", "limit": 180 },
+        { "color": "#ED1C24", "limit": 240 },
+        { "color": "#A50000", "limit": 270 },
+        { "color": "#410679", "limit": 9999 }
+      ]
+    },
+    {
+      "field": "latestWindGust",
+      "label": "Rajada de Vento",
+      "levels": [
+        { "color": "#00A651", "limit": 10 },
+        { "color": "#0071BC", "limit": 20 },
+        { "color": "#FCEE21", "limit": 30 },
+        { "color": "#F7931E", "limit": 40 },
+        { "color": "#ED1C24", "limit": 50 },
+        { "color": "#A50000", "limit": 60 },
+        { "color": "#410679", "limit": 999 }
+      ]
+    },
+    {
+      "field": "latestWindSpeed",
+      "label": "Velocidade do Vento",
+      "levels": [
+        { "color": "#00A651", "limit": 5 },
+        { "color": "#0071BC", "limit": 10 },
+        { "color": "#FCEE21", "limit": 15 },
+        { "color": "#F7931E", "limit": 20 },
+        { "color": "#ED1C24", "limit": 25 },
+        { "color": "#A50000", "limit": 30 },
+        { "color": "#410679", "limit": 999 }
+      ]
+    },
+    {
+      "field": "latestWindDirection",
+      "label": "Direção do Vento",
+      "levels": [
+        { "color": "#00A651", "limit": 45 },
+        { "color": "#0071BC", "limit": 90 },
+        { "color": "#FCEE21", "limit": 135 },
+        { "color": "#F7931E", "limit": 180 },
+        { "color": "#ED1C24", "limit": 225 },
+        { "color": "#A50000", "limit": 270 },
+        { "color": "#410679", "limit": 315 },
+        { "color": "#6A0DAD", "limit": 360 }
+      ]
+    }
+  ]
+}

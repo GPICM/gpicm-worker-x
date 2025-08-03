@@ -8,9 +8,7 @@ import matplotlib.colors as mcolors
 import matplotlib.cm as cm
 
 
-# ---- Define custom colors here: one per level ----
-# Can use HEX codes, color names, or RGB tuples
-custom_colors = [
+default_colors = [
     "#00A651",  # Normal (0 mm)
     "#0071BC",  # Observação (0.2–5 mm)
     "#FCEE21",  # Atenção (5.1–20 mm)
@@ -22,16 +20,16 @@ custom_colors = [
 
 simplify_tolerance = 0.00025  # degrees (small for subtle simplification)
 
-def createGeojson(grid_x, grid_y, z_data, levels, hull_poly):
+def createGeojson(grid_x, grid_y, z_data, levels, hull_poly, colors = default_colors):
 
 
     print("levels:",  len(levels))
-    print("colors:",  len(custom_colors))
+    print("colors:",  len(colors))
     
     # Sanity check: must match number of color intervals
-    if len(custom_colors) != len(levels):
-        raise ValueError("Length of custom_colors must match number of levels.")
-    
+    if len(colors) < len(levels) - 1:
+        print(f"Warning: colors count {len(colors)} is less than levels intervals {len(levels)-1} for field {field}")
+
     fig, ax = plt.subplots()
     cs = ax.contourf(grid_x, grid_y, z_data, levels=levels, cmap='turbo')
     features = []
@@ -47,7 +45,7 @@ def createGeojson(grid_x, grid_y, z_data, levels, hull_poly):
 
         
             level = cs.levels[i]
-            color = custom_colors[i] 
+            color = colors[i] 
 
             for seg in cs.allsegs[i]:
                 if len(seg) < 3:  # Need at least 3 points

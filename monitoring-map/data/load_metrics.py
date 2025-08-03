@@ -6,8 +6,7 @@ fields = [
     "rainVolumeAcc",
     "latestWindGust",
     "latestWindSpeed",
-    "latestTemperature",
-    "latestWindDirection"
+    "latestTemperature"
 ]
 
 def loadMetricDataFrames():

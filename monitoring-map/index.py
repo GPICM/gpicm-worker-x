@@ -5,69 +5,94 @@ import pandas as pd
 
 from scipy.interpolate import Rbf
 from shapely.geometry import Point, shape
-from data.load_metrics import loadMetrics
+from data.load_metrics import loadMetricDataFrames
 from data.create_geojson import createGeojson
+
+# Example: load your config JSON from file or string
+with open("./monitoring-map/config.json") as f:
+    config_data = json.load(f)
+
+# Build a dict: field name -> sorted list of limits
+levels_map = {}
+colors_map = {}
+
+
+for cfg in config_data.get("configures", []):
+    field = cfg["field"]
+    # Extract all limits from the "levels" list
+    limits = [level["limit"] for level in cfg.get("levels", [])]
+    # Sort ascending just in case
+    limits = sorted(limits)
+    levels_map[field] = limits
+
+for cfg in config_data.get("configures", []):
+    field = cfg["field"]
+    colors = [level["color"] for level in cfg.get("levels", [])]
+    colors_map[field] = colors
+
+# Example output
+print(levels_map)
 
 def main():
 
     try:
-        """ Baixar Limites """
+        """ Load GeoJSON Borders """
     
         print("Loading Default GeoJson borders")
         with open("./monitoring-map/macae.json") as f:
             border_geojson = json.load(f)
 
-        # Extrair a geometria (Polygon ou MultiPolygon)
         hull_poly = shape(border_geojson["features"][0]["geometry"])
-        tolerance = 0.01  # degrees, adjust for desired simplification level
-        hull_poly_simple = hull_poly.simplify(tolerance, preserve_topology=True)
+        hull_poly_simple = hull_poly.simplify(0.01 , preserve_topology=True)
 
-        """ Carregar Metricas """
+
+        """ Load Metric DataFrames """
 
         print("Loading Metrics")
-        metrics = loadMetrics()
-        # Transformar a lista de dicts em DataFrame
-        df = pd.DataFrame(metrics)
+        metric_dfs = loadMetricDataFrames()  # new function returning dict of dfs
+
+        if not metric_dfs:
+            print("No valid metric data available.")
+            return
         
-        # Agora pegar os pontos como numpy array
-        points = df[['lon', 'lat']].values
+        for field, df in metric_dfs.items():
+            print(f"Processing field: {field} with {len(df)} points")
 
-        # Interpolation grid
-        buffer = 0.05
-        grid_lon = np.linspace(df['lon'].min() - buffer, df['lon'].max() + buffer, 150)
-        grid_lat = np.linspace(df['lat'].min() - buffer, df['lat'].max() + buffer, 150)
-        grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
+            points = df[['lon', 'lat']].values
 
-        # RBF interpolation
-        rbf = Rbf(df['lon'], df['lat'], df['value'], function='linear')
-        z_interp = rbf(grid_x, grid_y)
+            buffer = 0.05
+            grid_lon = np.linspace(df['lon'].min() - buffer, df['lon'].max() + buffer, 150)
+            grid_lat = np.linspace(df['lat'].min() - buffer, df['lat'].max() + buffer, 150)
+            grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
 
-        print("zinterp", z_interp)
+            # RBF interpolation on the specific metric field
+            rbf = Rbf(df['lon'], df['lat'], df[field], function='linear')
+            z_interp = rbf(grid_x, grid_y)
 
+            # Mask outside convex hull
+            mask = np.zeros_like(grid_x, dtype=bool)
+            for i in range(grid_x.shape[0]):
+                for j in range(grid_x.shape[1]):
+                    if not hull_poly_simple.contains(Point(grid_x[i, j], grid_y[i, j])):
+                        mask[i, j] = True
 
-        """ Aplicando Mascaras """
+            z_interp[mask] = np.nan
 
-        # Mask outside convex hull
-        mask = np.zeros_like(grid_x, dtype=bool)
-        for i in range(grid_x.shape[0]):
-            for j in range(grid_x.shape[1]):
-                if not hull_poly_simple.contains(Point(grid_x[i, j], grid_y[i, j])):
-                    mask[i, j] = True
+            """ Generate result """
 
-        z_interp[mask] = np.nan
-        # k= 0.5
-        z_round = z_interp  # np.round(0.5 * z_interp) / 0.5  # Optional rounding
+            levels = levels_map.get(field, [0, 50, 100, 150])
+            colors = colors_map.get(field)
 
+            geojson = createGeojson(grid_x, grid_y, z_interp, levels, hull_poly_simple, colors)
 
-        levels = [0.0, 45, 90, 125, 180, 240, 270]  # 6 intervals, 7 thresholds
-        geojson = createGeojson(grid_x, grid_y, z_round, levels, hull_poly_simple)
+            """ Save Result """
+            filename = f"contours_{field}.geojson"
+            with open(filename, 'w') as f:
+                json.dump(geojson, f, indent=2)
+            print(f"Successfully generated {filename}")
 
-        with open('contours.geojson', 'w') as f:
-            json.dump(geojson, f, indent=2)
-
-        print("Successfully generated contours GeoJSON!")
-        print(f"Stations included: {len(points)}")
-        print(f"Contour levels used: {levels}")
+            print(f"Stations included: {len(points)}")
+            print(f"Contour levels used: {levels}")
 
     except Exception as e:
         import traceback
