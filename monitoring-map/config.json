@@ -9,7 +9,20 @@
         { "color": "#FCEE21", "limit": 30 },
         { "color": "#F7931E", "limit": 40 },
         { "color": "#ED1C24", "limit": 50 },
-        { "color": "#A50000", "limit": 60 },
+        { "color": "#ec3833", "limit": 60 },
+        { "color": "#410679", "limit": 80 }
+      ]
+    },
+      {
+      "field": "minTemperature",
+      "label": "Temperatura",
+      "levels": [
+        { "color": "#00A651", "limit": 0 },
+        { "color": "#0071BC", "limit": 10 },
+        { "color": "#FCEE21", "limit": 30 },
+        { "color": "#F7931E", "limit": 40 },
+        { "color": "#ED1C24", "limit": 50 },
+        { "color": "#ec3833", "limit": 60 },
         { "color": "#410679", "limit": 80 }
       ]
     },
@@ -22,7 +35,7 @@
         { "color": "#FCEE21", "limit": 5 },
         { "color": "#F7931E", "limit": 20 },
         { "color": "#ED1C24", "limit": 40 },
-        { "color": "#A50000", "limit": 50 },
+        { "color": "#ec3833", "limit": 50 },
         { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
@@ -35,7 +48,7 @@
         { "color": "#FCEE21", "limit": 30 },
         { "color": "#F7931E", "limit": 40 },
         { "color": "#ED1C24", "limit": 50 },
-        { "color": "#A50000", "limit": 60 },
+        { "color": "#ec3833", "limit": 60 },
         { "color": "#410679", "limit": 999 }
       ]
     },
@@ -43,12 +56,12 @@
       "field": "latestWindSpeed",
       "label": "Velocidade do Vento",
       "levels": [
-        { "color": "#00A651", "limit": 5 },
-        { "color": "#0071BC", "limit": 10 },
-        { "color": "#FCEE21", "limit": 15 },
-        { "color": "#F7931E", "limit": 20 },
-        { "color": "#ED1C24", "limit": 25 },
-        { "color": "#A50000", "limit": 30 },
+        { "color": "#00A651", "limit": 10 },
+        { "color": "#0071BC", "limit": 20 },
+        { "color": "#FCEE21", "limit": 30 },
+        { "color": "#F7931E", "limit": 40 },
+        { "color": "#ED1C24", "limit": 50 },
+        { "color": "#ec3833", "limit": 60 },
         { "color": "#410679", "limit": 999 }
       ]
     },
@@ -62,7 +75,7 @@
         { "color": "#F7931E", "limit": 180 },
         { "color": "#ED1C24", "limit": 225 },
         { "color": "#A50000", "limit": 270 },
-        { "color": "#410679", "limit": 315 },
+        { "color": "#ec3833", "limit": 315 },
         { "color": "#6A0DAD", "limit": 360 }
       ]
     }
