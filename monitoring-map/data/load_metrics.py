@@ -2,40 +2,63 @@ import pandas as pd
 
 from infrastructure import station_daily_metrics_repository
 
-def loadMetrics(field="latestWindDirection"):
+fields = [
+    "rainVolumeAcc",
+    "latestWindGust",
+    "latestWindSpeed",
+    "latestTemperature",
+    "latestWindDirection"
+]
+
+def loadMetricDataFrames():
+
     docs = list(station_daily_metrics_repository.get_online_station_metrics())
-    data = []
+    base_data = []
 
     for doc in docs:
-        val = doc.get(field)
-        # Skip docs where value is None or not numeric
-        if val is None or not isinstance(val, (int, float)):
-            continue
 
+        geo = doc.get("geoPosition", {}).get("coordinates")
+        if not geo or len(geo) != 2:
+            continue
+        
         dic = {
-            "lon": doc.get("geoPosition").get("coordinates")[0],
-            "lat": doc.get("geoPosition").get("coordinates")[1],
-            "value": val,
+            "lon": geo[0],
+            "lat": geo[1],
             "station": doc.get("stationSlug")
         }
-        data.append(dic)
+
+        for field in fields:
+            value = doc.get(field)
+            dic[field] = value if isinstance(value, (int, float)) else None
+        
+        base_data.append(dic)
 
     # Convert to DataFrame for outlier detection
-    df = pd.DataFrame(data)
+    full_df = pd.DataFrame(base_data)
+    if full_df.empty:
+        return {}
+    
+        # Filter out rows with all metrics missing
+    full_df = full_df.dropna(subset=fields, how="all")
 
-    if df.empty:
-        return []
+    # Generate one DataFrame per field
+    field_dfs = {}
 
-    # IQR method for outlier detection on 'value'
-    Q1 = df['value'].quantile(0.25)
-    Q3 = df['value'].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
+    for field in fields:
+        df = full_df[["lon", "lat", "station", field]].dropna(subset=[field])
 
+        if df.empty:
+            continue
 
-    # Filter out outliers
-    df_filtered = df[ (df['value'] != None) & (df['value'] >= lower_bound) & (df['value'] <= upper_bound)]
+        # IQR outlier filtering
+        Q1 = df[field].quantile(0.25)
+        Q3 = df[field].quantile(0.75)
+        IQR = Q3 - Q1
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
 
-    # Return filtered data as list of dicts
-    return df_filtered.to_dict(orient='records')
+        df = df[(df[field] >= lower) & (df[field] <= upper)]
+
+        field_dfs[field] = df.reset_index(drop=True)
+
+    return field_dfs
