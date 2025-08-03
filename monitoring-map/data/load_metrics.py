@@ -3,11 +3,62 @@ from datetime import datetime, time, timedelta
 
 from infrastructure import station_daily_metrics_repository
 
+
+def apply_local_iqr(df: pd.DataFrame, field: str, cell_size: float = 0.1) -> pd.DataFrame:
+
+    if df.empty or df[field].isnull().all():
+        return df
+
+    df = df.copy()
+    df["cell_x"] = (df["lon"] / cell_size).astype(int)
+    df["cell_y"] = (df["lat"] / cell_size).astype(int)
+
+    def iqr_filter(group):
+
+        cx, cy = group.cell_x.iloc[0], group.cell_y.iloc[0]
+        values = group[field].tolist()
+
+        print(f"\n🧭 [GRUPO] Célula ({cx}, {cy}) — {len(group)} pontos")
+        print(f"📊 Valores: {values}")
+
+        if len(group) < 4:
+            print(f"⚠️  Muito poucos dados para aplicar IQR — mantendo todos os pontos")
+            return group
+        
+        Q1 = group[field].quantile(0.25)
+        Q3 = group[field].quantile(0.75)
+        IQR = Q3 - Q1
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
+
+        print(f"🔢 Q1: {Q1:.2f}, Q3: {Q3:.2f}, IQR: {IQR:.2f}")
+        print(f"📐 Limites: [{lower:.2f}, {upper:.2f}]")
+
+        outliers = group[(group[field] < lower) | (group[field] > upper)]
+        kept = group[(group[field] >= lower) & (group[field] <= upper)]
+
+        print(f"✅ Mantidos: {len(kept)} | 🗑️ Removidos: {len(outliers)}")
+
+        if not outliers.empty:
+            print(f"🗑️  Valores removidos: {outliers[field].tolist()}")
+
+        return kept
+
+    grouped = df.groupby(["cell_x", "cell_y"], group_keys=False)
+    filtered = grouped[[field, "lon", "lat", "station", "cell_x", "cell_y"]].apply(iqr_filter)
+
+    filtered = filtered.drop(columns=["cell_x", "cell_y"]).reset_index(drop=True)
+
+    if filtered.empty:
+        print(f"[IQR] Todos os dados de '{field}' foram removidos após o filtro.")
+
+    return filtered
+
 fields = [
-    "rainVolumeAcc",
+    "latestTemperature",
+     "rainVolumeAcc",
     "latestWindGust",
     "latestWindSpeed",
-    "latestTemperature",
     "minTemperature"
 ]
 
@@ -39,7 +90,7 @@ def loadMetricDataFrames():
     if full_df.empty:
         return {}
     
-        # Filter out rows with all metrics missing
+    # Filter out rows with all metrics missing
     full_df = full_df.dropna(subset=fields, how="all")
 
     # Generate one DataFrame per field
@@ -51,15 +102,14 @@ def loadMetricDataFrames():
         if df.empty:
             continue
 
-        # IQR outlier filtering
-        Q1 = df[field].quantile(0.25)
-        Q3 = df[field].quantile(0.75)
-        IQR = Q3 - Q1
-        lower = Q1 - 1.5 * IQR
-        upper = Q3 + 1.5 * IQR
+        print(f"[IQR] Antes do filtro: {len(df)} linhas")
+        df = apply_local_iqr(df, field, cell_size=0.1)
+        print(f"[IQR] Após o filtro: {len(df)} linhas")
 
-        df = df[(df[field] >= lower) & (df[field] <= upper)]
-
-        field_dfs[field] = df.reset_index(drop=True)
+        if not df.empty:
+            field_dfs[field] = df.reset_index(drop=True)
 
     return field_dfs
+
+
+
