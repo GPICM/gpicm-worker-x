@@ -2,6 +2,9 @@
 import json
 import numpy as np
 
+import schedule
+import time
+
 from scipy.interpolate import Rbf
 from shapely.geometry import Point, shape
 from data.load_metrics import loadMetricDataFrames
@@ -120,8 +123,8 @@ def main():
 
 if __name__ == "__main__":
     print("Scheduler started. Running every 10 minutes.")
-    #schedule.every(10).minutes.do(main)
+    schedule.every(10).minutes.do(main)
     main() 
-"""     while True:
+    while True:
         schedule.run_pending()
-        time.sleep(10) """
+        time.sleep(10)
