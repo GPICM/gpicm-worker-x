@@ -11,7 +11,7 @@
         { "color": "#F7931E", "limit": 25 },
         { "color": "#ED1C24", "limit": 30 },
         { "color": "#ec3833", "limit": 40 },
-        { "color": "#410679", "limit": 50 }
+        { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
       {
@@ -25,7 +25,7 @@
         { "color": "#F7931E", "limit": 25 },
         { "color": "#ED1C24", "limit": 30 },
         { "color": "#ec3833", "limit": 40 },
-        { "color": "#410679", "limit": 50 }
+        { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
     {
@@ -47,13 +47,13 @@
       "label": "Rajada de Vento",
       "interpolation": "rbf",
       "levels": [
-        { "color": "#00A651", "limit": 10 },
+        { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 20 },
-        { "color": "#FCEE21", "limit": 30 },
-        { "color": "#F7931E", "limit": 40 },
-        { "color": "#ED1C24", "limit": 50 },
-        { "color": "#ec3833", "limit": 60 },
-        { "color": "#410679", "limit": 999 }
+        { "color": "#FCEE21", "limit": 40 },
+        { "color": "#F7931E", "limit": 50 },
+        { "color": "#ED1C24", "limit": 60 },
+        { "color": "#ec3833", "limit": 75 },
+        { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
     {
@@ -61,13 +61,13 @@
       "label": "Velocidade do Vento",
       "interpolation": "rbf",
       "levels": [
-        { "color": "#00A651", "limit": 10 },
+        { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 20 },
-        { "color": "#FCEE21", "limit": 30 },
-        { "color": "#F7931E", "limit": 40 },
-        { "color": "#ED1C24", "limit": 50 },
-        { "color": "#ec3833", "limit": 60 },
-        { "color": "#410679", "limit": 999 }
+        { "color": "#FCEE21", "limit": 40 },
+        { "color": "#F7931E", "limit": 50 },
+        { "color": "#ED1C24", "limit": 60 },
+        { "color": "#ec3833", "limit": 75 },
+        { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
     {
