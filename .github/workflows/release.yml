@@ -1,0 +1,30 @@
+
+name: Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - v*
+env:
+  REGISTRY_NAME: fonsecabarreto
+  IMAGE_NAME: weather-map-interpolation-app
+
+jobs:
+  pushToDockerHub:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Decode Base64 Secret and Create .env File
+      run: echo "${{ secrets.ENV_BASE64 }}" | base64 -d > .env
+
+    - name: Build
+      run: docker build  -f ./Dockerfile --target production --tag $REGISTRY_NAME/$IMAGE_NAME $(for i in `cat .env`; do out+="--build-arg $i " ; done; echo $out;out="") ./
+
+    - run: echo "${{secrets.DOCKERHUB_PASSWORD}}" | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
+    - run: docker push $REGISTRY_NAME/$IMAGE_NAME:latest
+
+    - name: Clean up
+      run: rm -f .env
+
