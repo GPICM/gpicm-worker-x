@@ -4,20 +4,7 @@
       "field": "latestTemperature",
       "label": "Temperatura",
       "interpolation": "kriging",
-      "levels": [
-        { "color": "#00A651", "limit": 0 },
-        { "color": "#0071BC", "limit": 10 },
-        { "color": "#FCEE21", "limit": 20 },
-        { "color": "#F7931E", "limit": 25 },
-        { "color": "#ED1C24", "limit": 30 },
-        { "color": "#ec3833", "limit": 40 },
-        { "color": "#410679", "limit": 9223372036854775807 }
-      ]
-    },
-      {
-      "field": "minTemperature",
-      "label": "Temperatura",
-      "interpolation": "kriging",
+      "min": 1,
       "levels": [
         { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 10 },
@@ -29,16 +16,32 @@
       ]
     },
     {
-      "field": "rainVolumeAcc",
-      "label": "Volume Acumulado de Chuva",
+      "field": "latestAtmosphericPressure",
+      "label": "Pressão Atmosférica",
       "interpolation": "rbf",
+      "min": 900,
+      "levels": [
+        { "color": "#410679", "limit": 960 },
+        { "color": "#ec3833", "limit": 980 },
+        { "color": "#ED1C24", "limit": 1000 },
+        { "color": "#F7931E", "limit": 1010 },
+        { "color": "#FCEE21", "limit": 1020 },
+        { "color": "#0071BC", "limit": 1030 },
+        { "color": "#00A651", "limit": 9223372036854775807 }
+      ]
+    },
+    {
+      "field": "latestThermalSensation",
+      "label": "Sensação Térmica",
+      "interpolation": "kriging",
+      "min": 1,
       "levels": [
         { "color": "#00A651", "limit": 0 },
-        { "color": "#0071BC", "limit": 0.2 },
-        { "color": "#FCEE21", "limit": 5 },
-        { "color": "#F7931E", "limit": 20 },
-        { "color": "#ED1C24", "limit": 40 },
-        { "color": "#ec3833", "limit": 50 },
+        { "color": "#0071BC", "limit": 10 },
+        { "color": "#FCEE21", "limit": 20 },
+        { "color": "#F7931E", "limit": 25 },
+        { "color": "#ED1C24", "limit": 30 },
+        { "color": "#ec3833", "limit": 40 },
         { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
@@ -46,6 +49,7 @@
       "field": "latestWindGust",
       "label": "Rajada de Vento",
       "interpolation": "rbf",
+      "min": 0,
       "levels": [
         { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 20 },
@@ -60,6 +64,7 @@
       "field": "latestWindSpeed",
       "label": "Velocidade do Vento",
       "interpolation": "rbf",
+      "min": 0,
       "levels": [
         { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 20 },
@@ -71,18 +76,33 @@
       ]
     },
     {
-      "field": "latestWindDirection",
-      "label": "Direção do Vento",
+      "field": "rainVolumeAcc",
+      "label": "Volume Acumulado de Chuva",
       "interpolation": "rbf",
+      "min": 0,
       "levels": [
-        { "color": "#00A651", "limit": 45 },
-        { "color": "#0071BC", "limit": 90 },
-        { "color": "#FCEE21", "limit": 135 },
-        { "color": "#F7931E", "limit": 180 },
-        { "color": "#ED1C24", "limit": 225 },
-        { "color": "#A50000", "limit": 270 },
-        { "color": "#ec3833", "limit": 315 },
-        { "color": "#6A0DAD", "limit": 360 }
+        { "color": "#00A651", "limit": 0 },
+        { "color": "#0071BC", "limit": 0.2 },
+        { "color": "#FCEE21", "limit": 5 },
+        { "color": "#F7931E", "limit": 20 },
+        { "color": "#ED1C24", "limit": 40 },
+        { "color": "#ec3833", "limit": 50 },
+        { "color": "#410679", "limit": 9223372036854775807 }
+      ]
+    },
+    {
+      "field": "latestRainVolume",
+      "label": "Volume de Chuva (Último Registro)",
+      "interpolation": "rbf",
+      "min": 0,
+      "levels": [
+        { "color": "#00A651", "limit": 0 },
+        { "color": "#0071BC", "limit": 0.2 },
+        { "color": "#FCEE21", "limit": 2 },
+        { "color": "#F7931E", "limit": 10 },
+        { "color": "#ED1C24", "limit": 20 },
+        { "color": "#ec3833", "limit": 30 },
+        { "color": "#410679", "limit": 9223372036854775807 }
       ]
     }
   ]

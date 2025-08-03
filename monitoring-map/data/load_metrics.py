@@ -1,8 +1,6 @@
 import pandas as pd
-from datetime import datetime, time, timedelta
 
 from infrastructure import station_daily_metrics_repository
-
 
 def apply_local_iqr(df: pd.DataFrame, field: str, cell_size: float = 0.1) -> pd.DataFrame:
 
@@ -56,10 +54,14 @@ def apply_local_iqr(df: pd.DataFrame, field: str, cell_size: float = 0.1) -> pd.
 
 fields = [
     "latestTemperature",
-     "rainVolumeAcc",
+    "latestAtmosphericPressure",
+    "latestThermalSensation",
+
     "latestWindGust",
     "latestWindSpeed",
-    "minTemperature"
+
+    "rainVolumeAcc",
+    "latestRainVolume",
 ]
 
 def loadMetricDataFrames():
