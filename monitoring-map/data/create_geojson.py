@@ -74,9 +74,9 @@ def createGeojson(grid_x, grid_y, z_data, levels, hull_poly, colors = default_co
                     features.append({
                         "type": "Feature",
                         "properties": {
-                            "temperature": float(level),
-                            "min_temp": float(level - (levels[1]-levels[0])/2),
-                            "max_temp": float(level + (levels[1]-levels[0])/2),
+                            "value": float(level),
+                            "min": float(level - (levels[1]-levels[0])/2),
+                            "max": float(level + (levels[1]-levels[0])/2),
                             "color": color,  # HEX color
                             "fill": color,   # For web maps
                             "fill-opacity": 0.8  # Match your plot's alpha

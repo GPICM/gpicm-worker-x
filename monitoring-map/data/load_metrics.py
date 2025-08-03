@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime, time, timedelta
 
 from infrastructure import station_daily_metrics_repository
 
@@ -6,7 +7,8 @@ fields = [
     "rainVolumeAcc",
     "latestWindGust",
     "latestWindSpeed",
-    "latestTemperature"
+    "latestTemperature",
+    "minTemperature"
 ]
 
 def loadMetricDataFrames():

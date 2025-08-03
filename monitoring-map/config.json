@@ -4,26 +4,26 @@
       "field": "latestTemperature",
       "label": "Temperatura",
       "levels": [
-        { "color": "#00A651", "limit": 45 },
-        { "color": "#0071BC", "limit": 90 },
-        { "color": "#FCEE21", "limit": 125 },
-        { "color": "#F7931E", "limit": 180 },
-        { "color": "#ED1C24", "limit": 240 },
-        { "color": "#A50000", "limit": 270 },
-        { "color": "#410679", "limit": 9999 }
+        { "color": "#00A651", "limit": 0 },
+        { "color": "#0071BC", "limit": 10 },
+        { "color": "#FCEE21", "limit": 30 },
+        { "color": "#F7931E", "limit": 40 },
+        { "color": "#ED1C24", "limit": 50 },
+        { "color": "#A50000", "limit": 60 },
+        { "color": "#410679", "limit": 80 }
       ]
     },
     {
       "field": "rainVolumeAcc",
       "label": "Volume Acumulado de Chuva",
       "levels": [
-        { "color": "#00A651", "limit": 45 },
-        { "color": "#0071BC", "limit": 90 },
-        { "color": "#FCEE21", "limit": 125 },
-        { "color": "#F7931E", "limit": 180 },
-        { "color": "#ED1C24", "limit": 240 },
-        { "color": "#A50000", "limit": 270 },
-        { "color": "#410679", "limit": 9999 }
+        { "color": "#00A651", "limit": 0 },
+        { "color": "#0071BC", "limit": 0.2 },
+        { "color": "#FCEE21", "limit": 5 },
+        { "color": "#F7931E", "limit": 20 },
+        { "color": "#ED1C24", "limit": 40 },
+        { "color": "#A50000", "limit": 50 },
+        { "color": "#410679", "limit": 9223372036854775807 }
       ]
     },
     {
