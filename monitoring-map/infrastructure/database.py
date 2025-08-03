@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-print("Loading environment variables")
-load_dotenv()
+""" print("Loading environment variables")
+load_dotenv() """
 
 DATABASE_URL = os.getenv("MONGO_DB_URI")
 
