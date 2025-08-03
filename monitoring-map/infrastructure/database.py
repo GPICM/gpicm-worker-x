@@ -5,7 +5,7 @@ from pymongo import MongoClient
 print("Loading environment variables")
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("MONGO_DB_URI")
 
 _client = MongoClient(DATABASE_URL)
 _db = _client["weather"]
