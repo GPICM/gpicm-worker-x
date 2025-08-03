@@ -3,32 +3,35 @@
     {
       "field": "latestTemperature",
       "label": "Temperatura",
+      "interpolation": "kriging",
       "levels": [
         { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 10 },
-        { "color": "#FCEE21", "limit": 30 },
-        { "color": "#F7931E", "limit": 40 },
-        { "color": "#ED1C24", "limit": 50 },
-        { "color": "#ec3833", "limit": 60 },
-        { "color": "#410679", "limit": 80 }
+        { "color": "#FCEE21", "limit": 20 },
+        { "color": "#F7931E", "limit": 25 },
+        { "color": "#ED1C24", "limit": 30 },
+        { "color": "#ec3833", "limit": 40 },
+        { "color": "#410679", "limit": 50 }
       ]
     },
       {
       "field": "minTemperature",
       "label": "Temperatura",
+      "interpolation": "kriging",
       "levels": [
         { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 10 },
-        { "color": "#FCEE21", "limit": 30 },
-        { "color": "#F7931E", "limit": 40 },
-        { "color": "#ED1C24", "limit": 50 },
-        { "color": "#ec3833", "limit": 60 },
-        { "color": "#410679", "limit": 80 }
+        { "color": "#FCEE21", "limit": 20 },
+        { "color": "#F7931E", "limit": 25 },
+        { "color": "#ED1C24", "limit": 30 },
+        { "color": "#ec3833", "limit": 40 },
+        { "color": "#410679", "limit": 50 }
       ]
     },
     {
       "field": "rainVolumeAcc",
       "label": "Volume Acumulado de Chuva",
+      "interpolation": "rbf",
       "levels": [
         { "color": "#00A651", "limit": 0 },
         { "color": "#0071BC", "limit": 0.2 },
@@ -42,6 +45,7 @@
     {
       "field": "latestWindGust",
       "label": "Rajada de Vento",
+      "interpolation": "rbf",
       "levels": [
         { "color": "#00A651", "limit": 10 },
         { "color": "#0071BC", "limit": 20 },
@@ -55,6 +59,7 @@
     {
       "field": "latestWindSpeed",
       "label": "Velocidade do Vento",
+      "interpolation": "rbf",
       "levels": [
         { "color": "#00A651", "limit": 10 },
         { "color": "#0071BC", "limit": 20 },
@@ -68,6 +73,7 @@
     {
       "field": "latestWindDirection",
       "label": "Direção do Vento",
+      "interpolation": "rbf",
       "levels": [
         { "color": "#00A651", "limit": 45 },
         { "color": "#0071BC", "limit": 90 },
