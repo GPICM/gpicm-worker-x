@@ -1,162 +1,80 @@
 from dotenv import load_dotenv
 
-# Carrega variáveis do .env
+print("Loading environment variables")
 load_dotenv()
 
-from database import get_today_online_station_metrics
-
+import json
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from io import StringIO
-import json
-from shapely.geometry import Polygon, MultiPoint, Point
+
 from scipy.interpolate import Rbf
-from scipy.spatial import ConvexHull
-from shapely.errors import TopologicalError
-
-import matplotlib.colors as mcolors
-import matplotlib.cm as cm
-
-# Load and preprocess data
-
-docs = list(get_today_online_station_metrics())
+from shapely.geometry import Point, shape
+from data.load_metrics import loadMetrics
+from data.create_geojson import createGeojson
 
 
-df = []
-
-for i in range(0, len(docs)):
-    doc = docs[i]
-
-    print(doc)
-
-    dic = {
-        "lon": doc.get("geoPosition").get("coordinates")[0],
-        "lat": doc.get("geoPosition").get("coordinates")[1],
-        "wind": doc.get("latestTemperature"),
-        "station": doc.get("stationSlug")
-    }
-    df.append(dic)
+def main():
 
 
-# Transformar a lista de dicts em DataFrame
-df = pd.DataFrame(df)
+    try:
+        print("Loading Default GeoJson borders")
+        with open("./monitoring-map/macae.json") as f:
+            border_geojson = json.load(f)
 
-# Agora pegar os pontos como numpy array
-points = df[['lon', 'lat']].values
+        # Extrair a geometria (Polygon ou MultiPolygon)
+        hull_poly = shape(border_geojson["features"][0]["geometry"])
 
-# Carregar GeoJSON externo com a fronteira
-with open("./monitoring-map/macae.json") as f:
-    border_geojson = json.load(f)
+        print("Loading Metrics")
+        metrics = loadMetrics()
+        # Transformar a lista de dicts em DataFrame
+        df = pd.DataFrame(metrics)
+        
+        # Agora pegar os pontos como numpy array
+        points = df[['lon', 'lat']].values
 
-# Extrair a geometria (Polygon ou MultiPolygon)
-from shapely.geometry import shape
+        # Interpolation grid
+        buffer = 0.05
+        grid_lon = np.linspace(df['lon'].min() - buffer, df['lon'].max() + buffer, 150)
+        grid_lat = np.linspace(df['lat'].min() - buffer, df['lat'].max() + buffer, 150)
+        grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
 
-hull_poly = shape(border_geojson["features"][0]["geometry"])
+        # RBF interpolation
+        rbf = Rbf(df['lon'], df['lat'], df['value'], function='linear')
+        z_interp = rbf(grid_x, grid_y)
+
+        # Mask outside convex hull
+        mask = np.zeros_like(grid_x, dtype=bool)
+        for i in range(grid_x.shape[0]):
+            for j in range(grid_x.shape[1]):
+                if not hull_poly.contains(Point(grid_x[i, j], grid_y[i, j])):
+                    mask[i, j] = True
+
+        z_interp[mask] = np.nan
+        # k= 0.5
+        z_round = z_interp  # np.round(0.5 * z_interp) / 0.5  # Optional rounding
+
+        
+        """ z_min = np.nanmin(z_interp)
+        z_max = np.nanmax(z_interp)
+        print(f"z_min: {z_min}, z_max: {z_max}")
+        z_round = np.clip(z_round, z_min, z_max) """
+
+        # Generate levels and GeoJSON
+        levels = np.arange(np.nanmin(z_round), np.nanmax(z_round) + 0.5, 0.5)
+        geojson = createGeojson(grid_x, grid_y, z_round, levels, hull_poly)
+
+        with open('contours.geojson', 'w') as f:
+            json.dump(geojson, f, indent=2)
+
+        print("Successfully generated contours GeoJSON!")
+        print(f"Stations included: {len(points)}")
+        print(f"Contour levels used: {levels}")
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print("Error loading metrics:", e)
 
 
-# Interpolation grid
-buffer = 0.05
-grid_lon = np.linspace(df['lon'].min()-buffer, df['lon'].max()+buffer, 150)
-grid_lat = np.linspace(df['lat'].min()-buffer, df['lat'].max()+buffer, 150)
-grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
-
-# RBF interpolation
-rbf = Rbf(df['lon'], df['lat'], df['wind'], function='linear')
-z_interp = rbf(grid_x, grid_y)
-
-# Mask outside convex hull
-mask = np.zeros_like(grid_x, dtype=bool)
-for i in range(grid_x.shape[0]):
-    for j in range(grid_x.shape[1]):
-        if not hull_poly.contains(Point(grid_x[i,j], grid_y[i,j])):
-            mask[i,j] = True
-
-z_interp[mask] = np.nan
-k= 0.5
-z_round = z_interp#np.round(k * z_interp) / k  # Round to nearest 0.5
-z_min = np.nanmin(z_interp)
-z_max = np.nanmax(z_interp)
-print(f"z_min: {z_min}, z_max: {z_max}")
-z_round = np.clip(z_round, z_min, z_max)
-
-# Robust GeoJSON generation that handles edge cases
-def create_geojson(grid_x, grid_y, z_data, levels):
-    fig, ax = plt.subplots()
-    cs = ax.contourf(grid_x, grid_y, z_data, levels=levels, cmap='turbo')
-    features = []
-    
-    # --- Color Mapping Setup ---
-    norm = mcolors.Normalize(vmin=min(levels), vmax=max(levels))
-    cmap = cm.get_cmap('turbo')  # Must match the contourf cmap
-    sm = cm.ScalarMappable(norm=norm, cmap=cmap)
-
-    # Safe way to access contour segments
-    if hasattr(cs, 'allsegs'):
-        for i in range(min(len(cs.levels), len(cs.allsegs))):  # Ensure we don't exceed bounds
-            level = cs.levels[i]
-            rgba = sm.to_rgba(level)  # Get RGBA color for this level
-            hex_color = mcolors.rgb2hex(rgba)  # Convert to HEX
-            for seg in cs.allsegs[i]:
-                if len(seg) < 3:  # Need at least 3 points
-                    continue
-                    
-                # Close the polygon
-                closed_seg = np.vstack([seg, seg[0]])
-                try:
-                    poly = Polygon(closed_seg)
-                    if not poly.is_valid:
-                        poly = poly.buffer(0)
-                    
-                    clipped = poly.intersection(hull_poly)
-                    if clipped.is_empty:
-                        continue
-                        
-                    if clipped.geom_type == 'Polygon':
-                        coords = [np.array(clipped.exterior.coords).tolist()]
-                    elif clipped.geom_type == 'MultiPolygon':
-                        coords = [np.array(p.exterior.coords).tolist() for p in clipped.geoms]
-                    else:
-                        continue
-                        
-                    features.append({
-                        "type": "Feature",
-                        "properties": {
-                            "temperature": float(level),
-                            "min_temp": float(level - (levels[1]-levels[0])/2),
-                            "max_temp": float(level + (levels[1]-levels[0])/2),
-                            "color": hex_color,  # HEX color
-                            "fill": hex_color,   # For web maps
-                            "fill-opacity": 0.8  # Match your plot's alpha
-                        },
-                        "geometry": {
-                            "type": "Polygon" if clipped.geom_type == 'Polygon' else "MultiPolygon",
-                            "coordinates": coords
-                        }
-                    })
-                except (ValueError, TopologicalError):
-                    continue
-    
-    plt.close(fig)
-    return {
-        "type": "FeatureCollection",
-        "features": features,
-        "properties": {
-            "description": "Wind gust contours",
-            "units": "m/s",
-            "levels": [float(l) for l in levels],
-            "station_count": len(points)
-        }
-    }
-
-# Generate levels and GeoJSON
-levels = np.arange(np.nanmin(z_round), np.nanmax(z_round) + 0.5, 0.5)
-geojson = create_geojson(grid_x, grid_y, z_round, levels)
-
-# Save output
-with open('wind_gust_contours.geojson', 'w') as f:
-    json.dump(geojson, f, indent=2)
-
-print("Successfully generated wind gust contours GeoJSON!")
-print(f"Contour levels used: {levels}")
-print(f"Stations included: {len(points)}")
+if __name__ == "__main__":
+    main()
