@@ -1,6 +1,6 @@
 from data.database import get_today_online_station_metrics
 
-def loadMetrics(field="latestTemperature"):
+def loadMetrics(field="latestWindGust"):
         
     docs = list(get_today_online_station_metrics())
 

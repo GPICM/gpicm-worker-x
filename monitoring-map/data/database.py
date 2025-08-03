@@ -43,6 +43,8 @@ def get_today_online_station_metrics():
                 "_id": 1,
                 "geoPosition": "$stationData.geoPosition",
                 "latestTemperature": 1,
+                "rainVolumeAcc": 1,
+                "latestWindGust": 1,
                 "stationSlug": 1
             }
         }

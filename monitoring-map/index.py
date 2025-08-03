@@ -15,14 +15,19 @@ from data.create_geojson import createGeojson
 
 def main():
 
-
     try:
+        """ Baixar Limites """
+    
         print("Loading Default GeoJson borders")
         with open("./monitoring-map/macae.json") as f:
             border_geojson = json.load(f)
 
         # Extrair a geometria (Polygon ou MultiPolygon)
         hull_poly = shape(border_geojson["features"][0]["geometry"])
+        tolerance = 0.01  # degrees, adjust for desired simplification level
+        hull_poly_simple = hull_poly.simplify(tolerance, preserve_topology=True)
+
+        """ Carregar Metricas """
 
         print("Loading Metrics")
         metrics = loadMetrics()
@@ -42,26 +47,25 @@ def main():
         rbf = Rbf(df['lon'], df['lat'], df['value'], function='linear')
         z_interp = rbf(grid_x, grid_y)
 
+        print("zinterp", z_interp)
+
+
+        """ Aplicando Mascaras """
+
         # Mask outside convex hull
         mask = np.zeros_like(grid_x, dtype=bool)
         for i in range(grid_x.shape[0]):
             for j in range(grid_x.shape[1]):
-                if not hull_poly.contains(Point(grid_x[i, j], grid_y[i, j])):
+                if not hull_poly_simple.contains(Point(grid_x[i, j], grid_y[i, j])):
                     mask[i, j] = True
 
         z_interp[mask] = np.nan
         # k= 0.5
         z_round = z_interp  # np.round(0.5 * z_interp) / 0.5  # Optional rounding
 
-        
-        """ z_min = np.nanmin(z_interp)
-        z_max = np.nanmax(z_interp)
-        print(f"z_min: {z_min}, z_max: {z_max}")
-        z_round = np.clip(z_round, z_min, z_max) """
 
-        # Generate levels and GeoJSON
-        levels = np.arange(np.nanmin(z_round), np.nanmax(z_round) + 0.5, 0.5)
-        geojson = createGeojson(grid_x, grid_y, z_round, levels, hull_poly)
+        levels = [0.0, 10, 20, 30, 40, 50, 100.0]  # 6 intervals, 7 thresholds
+        geojson = createGeojson(grid_x, grid_y, z_round, levels, hull_poly_simple)
 
         with open('contours.geojson', 'w') as f:
             json.dump(geojson, f, indent=2)
