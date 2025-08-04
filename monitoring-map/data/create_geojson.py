@@ -6,6 +6,7 @@ from shapely.geometry import Polygon
 from shapely.errors import TopologicalError
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
+from shapely import vectorized
 
 
 default_colors = [
@@ -41,8 +42,6 @@ def createGeojson(grid_x, grid_y, z_data, levels, hull_poly, colors = default_co
     # Safe way to access contour segments
     if hasattr(cs, 'allsegs'):
         for i in range(min(len(cs.levels), len(cs.allsegs))):  # Ensure we don't exceed bounds
-
-        
             level = cs.levels[i]
             color = colors[i] 
 
@@ -70,15 +69,28 @@ def createGeojson(grid_x, grid_y, z_data, levels, hull_poly, colors = default_co
                     else:
                         continue
                         
+                    mask_inside = vectorized.contains(clipped, grid_x, grid_y)
+                    values_inside = z_data[mask_inside]
+
+                    if np.any(~np.isnan(values_inside)):
+                        avg_value = float(np.nanmean(values_inside))
+                        min_value = float(np.nanmin(values_inside))
+                        max_value = float(np.nanmax(values_inside))
+                    else:
+                        avg_value = None
+                        min_value = None
+                        max_value = None
+
                     features.append({
                         "type": "Feature",
                         "properties": {
-                            "value": float(level),
-                            "min": float(level - (levels[1]-levels[0])/2),
-                            "max": float(level + (levels[1]-levels[0])/2),
+                            "value": avg_value,
+                            "min": min_value,
+                            "max": max_value,
+                            "level": float(level),
                             "color": color,  # HEX color
                             "fill": color,   # For web maps
-                            "fill-opacity": 0.8  # Match your plot's alpha
+                            "fill-opacity": 0.8,
                         },
                         "geometry": {
                             "type": "Polygon" if clipped.geom_type == 'Polygon' else "MultiPolygon",

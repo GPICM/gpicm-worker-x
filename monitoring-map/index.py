@@ -99,8 +99,6 @@ def main():
             #filename = f"contours_{field}.geojson"
             #with open(filename, 'w') as f:
             #    json.dump(geojson, f, indent=2)  
-            
-
             print(f"Saved GeoJSON for {field}")
             print(f"Stations included: {len(points)}")
             print(f"Levels: {levels}")
