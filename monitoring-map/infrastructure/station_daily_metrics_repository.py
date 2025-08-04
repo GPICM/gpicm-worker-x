@@ -45,14 +45,17 @@ def get_online_station_metrics(date: datetime = None):
         {
             "$project": {
                 "_id": 1,
+                "stationSlug": 1,
                 "geoPosition": "$stationData.geoPosition",
                 "latestTemperature": 1,
                 "rainVolumeAcc": 1,
                 "latestWindGust": 1,
-                "latestWindDirection": 1,
                 "lastedWindSpeed": 1,
                 "minTemperature": 1,
-                "stationSlug": 1
+                "latestAtmosphericPressure": 1,
+                "latestThermalSensation": 1,
+                "latestWindSpeed": 1,
+                "latestRainVolume": 1
             }
         }
     ]
