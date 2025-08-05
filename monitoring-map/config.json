@@ -16,6 +16,21 @@
       ]
     },
     {
+      "field": "latestAirHumidity",
+      "label": "Umidade relativa",
+      "interpolation": "kriging",
+      "min": 0,
+      "levels": [
+        { "color": "#ED1C24", "limit": 0 },
+        { "color": "#F7931E", "limit": 12 },
+        { "color": "#FCEE21", "limit": 20 },
+        { "color": "#00A651", "limit": 30 },
+        { "color": "#0071BC", "limit": 40 },
+        { "color": "#0071BC", "limit": 60 },
+        { "color": "#0071BC", "limit": 9223372036854775807 }
+      ]
+    },
+    {
       "field": "latestAtmosphericPressure",
       "label": "Pressão Atmosférica",
       "interpolation": "rbf",

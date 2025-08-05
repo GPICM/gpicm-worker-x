@@ -62,8 +62,10 @@ def apply_local_iqr(df: pd.DataFrame, field: str, cell_size: float = 0.1, min_va
 
 fields = [
     "latestTemperature",
-    "latestAtmosphericPressure",
     "latestThermalSensation",
+    
+    "latestAtmosphericPressure",
+    "latestAirHumidity",
 
     "latestWindGust",
     "latestWindSpeed",

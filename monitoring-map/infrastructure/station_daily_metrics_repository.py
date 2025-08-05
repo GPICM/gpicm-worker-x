@@ -55,7 +55,8 @@ def get_online_station_metrics(date: datetime = None):
                 "latestAtmosphericPressure": 1,
                 "latestThermalSensation": 1,
                 "latestWindSpeed": 1,
-                "latestRainVolume": 1
+                "latestRainVolume": 1,
+                "latestAirHumidity": 1
             }
         }
     ]
