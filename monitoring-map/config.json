@@ -33,7 +33,7 @@
     {
       "field": "latestAtmosphericPressure",
       "label": "Pressão Atmosférica",
-      "interpolation": "rbf",
+      "interpolation": "kriging",
       "min": 900,
       "levels": [
         { "color": "#410679", "limit": 960 },
@@ -63,7 +63,7 @@
     {
       "field": "latestWindGust",
       "label": "Rajada de Vento",
-      "interpolation": "rbf",
+      "interpolation": "kriging",
       "min": 0,
       "levels": [
         { "color": "#00A651", "limit": 0 },
@@ -78,7 +78,7 @@
     {
       "field": "latestWindSpeed",
       "label": "Velocidade do Vento",
-      "interpolation": "rbf",
+      "interpolation": "kriging",
       "min": 0,
       "levels": [
         { "color": "#00A651", "limit": 0 },
@@ -93,7 +93,7 @@
     {
       "field": "rainVolumeAcc",
       "label": "Volume Acumulado de Chuva",
-      "interpolation": "rbf",
+      "interpolation": "kriging",
       "min": 0,
       "levels": [
         { "color": "#00A651", "limit": 0 },
@@ -108,7 +108,7 @@
     {
       "field": "latestRainVolume",
       "label": "Volume de Chuva (Último Registro)",
-      "interpolation": "rbf",
+      "interpolation": "kriging",
       "min": 0,
       "levels": [
         { "color": "#00A651", "limit": 0 },
