@@ -63,9 +63,45 @@ def createGeojson(grid_x, grid_y, z_data, levels, hull_poly, colors = default_co
                     clipped = clipped.simplify(simplify_tolerance, preserve_topology=True)
                      
                     if clipped.geom_type == 'Polygon':
-                        coords = [np.array(clipped.exterior.coords).tolist()]
+                        ring = np.array(clipped.exterior.coords)
+                        # Remove any NaN points
+                        if np.isnan(ring).any():
+                            mask = ~np.isnan(ring).any(axis=1)
+                            ring = ring[mask]
+                        ring = ring.tolist()
+
+                        if len(ring) < 4:  # Need at least 4 points (including closing point)
+                            continue  # Skip invalid polygons
+                    
+                        # Ensure ring is closed properly
+                        if ring[0] != ring[-1]:
+                            ring.append(ring[0])
+                        coords = [ring]
+    
                     elif clipped.geom_type == 'MultiPolygon':
-                        coords = [np.array(p.exterior.coords).tolist() for p in clipped.geoms]
+                        polygons = []
+                        for p in clipped.geoms:
+                            ring = np.array(p.exterior.coords)
+                            # Remove any NaN points
+                            if np.isnan(ring).any():
+                                mask = ~np.isnan(ring).any(axis=1)
+                                ring = ring[mask]
+                            ring = ring.tolist()
+
+                            if len(ring) < 4:  # Need at least 4 points
+                                continue  # Skip invalid polygon parts
+
+                            # Ensure ring is closed properly
+                            if ring[0] != ring[-1]:
+                                ring.append(ring[0])
+                            polygons.append([ring])  # Wrap ring in array for MultiPolygon
+
+                        coords = polygons
+
+                        if not polygons:  # Skip if all parts were invalid
+                            continue
+                        
+                        #coords = [np.array(p.exterior.coords).tolist() for p in clipped.geoms]
                     else:
                         continue
                         
